@@ -11,6 +11,6 @@ class ActionInsertSingleSpec extends FlatSpec with BeforeAndAfter with Matchers 
   import ActionInsertSingle.insertAlbumAction
 
   "ActionInsertSingle" should "Do stuff" in {
-    insertAlbumAction == insertAlbumAction
+    ??? //insertAlbumAction == insertAlbumAction
   }
 }

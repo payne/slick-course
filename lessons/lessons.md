@@ -130,7 +130,7 @@ We will discuss the ```*``` method in the next lesson.
    def * = (artist, title, id) <> (Album.tupled, Album.unapply)
 ```
 
-The ```*``` method (known as the 'default projection') for a table tells Slick how to covert between the case class
+The ```*``` method (known as the 'default projection') for a table tells Slick how to convert between the case class
 and the table columns.
 
 The left side is a tuple of columns ```(artist, title, id)``` representing the three columns we want to read

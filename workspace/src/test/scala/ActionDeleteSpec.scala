@@ -11,6 +11,6 @@ class ActionDeleteSpec extends FlatSpec with BeforeAndAfter with Matchers {
   import ActionDelete.deleteAlbumByArtist
 
   "ActionDelete" should "Do stuff" in {
-    deleteAlbumByArtist == deleteAlbumByArtist
+    ??? //deleteAlbumByArtist == deleteAlbumByArtist
   }
 }

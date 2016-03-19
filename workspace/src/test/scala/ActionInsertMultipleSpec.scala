@@ -11,6 +11,6 @@ class ActionInsertMultipleSpec extends FlatSpec with BeforeAndAfter with Matcher
   import ActionInsertMultiple.insertAlbumAction
 
   "ActionInsertMultiple" should "Do stuff" in {
-    insertAlbumAction == insertAlbumAction
+    ??? // insertAlbumAction == insertAlbumAction
   }
 }

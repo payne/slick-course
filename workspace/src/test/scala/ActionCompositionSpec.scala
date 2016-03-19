@@ -11,6 +11,6 @@ class ActionCompositionSpec extends FlatSpec with BeforeAndAfter with Matchers {
   import ActionComposition.insertNewAlbum
 
   "ActionDelete" should "Do stuff" in {
-    insertNewAlbum == insertNewAlbum
+    ??? //insertNewAlbum == insertNewAlbum
   }
 }

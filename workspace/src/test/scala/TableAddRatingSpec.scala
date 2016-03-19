@@ -29,11 +29,6 @@ class TableAddRatingSpec extends FlatSpec with BeforeAndAfter with Matchers {
 
     def exec[T](action: DBIO[T]): T =
       Await.result(db.run(action), 2 seconds)
-
-    println("----------------------------------")
-    val x: FixedSqlAction[Unit, NoStream, Schema] = createTableAction
-    createTableAction.statements.foreach(println(_))
-    println("----------------------------------")
     exec(createTableAction)
     exec(insertAlbumsAction)
     //exec(selectAlbumsAction).foreach(println)

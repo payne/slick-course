@@ -61,8 +61,8 @@ class TableAddYearSpec extends FlatSpec with BeforeAndAfter with Matchers {
     ))
 
 
-    typeOf[AlbumTable].me
-    exec(createTableAction)
+//    typeOf[AlbumTable].me
+//    exec(createTableAction)
     db.close()
   }
 }

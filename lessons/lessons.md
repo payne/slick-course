@@ -38,7 +38,10 @@ Click next to move onto the first lesson.
 ## 100 # What is Slick?
 
 * Slick 3 is the industry standard library for accessing relational databases in Scala
-* Unlike a lot of JVM database layers (such as Hibernate), it is *not* an ORM (Object Relational Mapper) 
+* Unlike a lot of JVM database layers (such as Hibernate), it is *not* an ORM (Object Relational Mapper)
+    ORM attempt to map in memory object graphs into tables (which are not a perfect match).
+    Slick treats the database relational model as a first class citizen and gives you tools to work wtih
+    the relational model.
 * Allows explicit communication with the database:
     * Define datatypes
     * Map them onto tables
@@ -171,88 +174,6 @@ We have created three things to allow storing of our data to a database table.
 
 The code and naming above is a standard Slick convention and all examples and exercises within the course will use them.
  The various options available in table setup are specified in the Slick documentation.
-
-
-## 600 # Tables - A few extras
-
-So now we have defined a table and all of So before we start writing code, lets briefly review a few more items we
-need to actually use Slick.  These are:
-
-* Actions
-* The database handle
-
-## 625 # Actions Briefly
-
-Actions represent commands we want to issue to the database.
-We will look at three types:
-
-* Create the table
-* Insert data
-* Select data
-
-Remember Actions are a definition of the work to be performed and are executed
-separately from being defined (we will see that later).
-
-## 630 # Actions Briefly - Creating the table
-
-An Action to create the Albums table:
-
-```scala
-  val createTableAction = AlbumTable.schema.create
-```
-
-## 635 # Actions Briefly - Inserting data
-
-Next we an Action to insert some test data into our table
-
-```scala
-  val insertAlbumsAction =
-    AlbumTable ++= Seq(
-      Album( "Keyboard Cat"  , "Keyboard Cat's Greatest Hits"  ), // released in 2009
-      Album( "Spice Girls"   , "Spice"                         ), // released in 1996
-      Album( "Rick Astley"   , "Whenever You Need Somebody"    ), // released in 1987
-      Album( "Manowar"       , "The Triumph of Steel"          ), // released in 1992
-      Album( "Justin Bieber" , "Believe"                       )) // released in 2013
-```
-
-## 640 # Actions Briefly - Selecting data
-
-The last Action we are going to look at now is select.  This action is the equivalent of
-```SELECT * FROM albums``` in SQL
-
-```scala
-  val selectAlbumsAction = AlbumTable.result
-```
-
-That is it for Actions right now, we will visit them again later in the tutorial.
-
-We have one last thing to talk about and then it is your turn.
-
-## 645 # The Database handle
-
-To actually perform operations on a database we need a handle to the database.
-
-```scala
-  val db = Database.forConfig("dbconfig")
-```
-
-Which creates a database handle that implements a ```run``` method for exercising Actions against the database.
-The above code uses a helper method to create a handle using a configuration defined in  Typesafe config.  The
- configuration lives in our ```application.conf```:
-
-```
-dbconfig = {
-  connectionPool      = disabled
-  url                 = "jdbc:h2:mem:db"
-  driver              = "org.h2.Driver"
-  keepAliveConnection = true
-}
-```
-
-This creates in in-memory H2 database instance.
-An in-memory database is great for testing, but must be recreated each time your application starts.  In production you
-would point at a standard database instance elsewhere.
-
 
 ## 650 # Executing queries
 
@@ -716,11 +637,37 @@ Slick Actions are anything that can be executed on a database.
 
 This includes:
 
+* The database handle
 * Query actions - Select
 * Structural actions - Create/Drop tables
 * Modify actions - Insert, Update, Delete
 
 We have already explored query actions in the previous section, now we will cover the remainder.
+
+## 2005 # Actions - The Database handle
+
+To actually perform operations on a database we need a handle to the database.
+
+```scala
+  val db = Database.forConfig("dbconfig")
+```
+
+Which creates a database handle that implements a ```run``` method for exercising Actions against the database.
+The above code uses a helper method to create a handle using a configuration defined in  Typesafe config.  The
+ configuration lives in our ```application.conf```:
+
+```
+dbconfig = {
+  connectionPool      = disabled
+  url                 = "jdbc:h2:mem:db"
+  driver              = "org.h2.Driver"
+  keepAliveConnection = true
+}
+```
+
+This creates in in-memory H2 database instance.
+An in-memory database is great for testing, but must be recreated each time your application starts.  In production you
+would point at a standard database instance elsewhere.
 
 ## 2010 # Actions - Create action
 

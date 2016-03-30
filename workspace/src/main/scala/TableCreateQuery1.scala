@@ -58,8 +58,12 @@ object TableCreateQuery1 {
 
   /*:CODEFROM:*/
 
-  //val notBadAlbumsAfter1990ByArtist = ???
+//  val notBadAlbumsAfter1990ByArtist = ???
 
-  /*:CODETO:*/
+  /*:SOLUTIONFROM:*/
+
+  val notBadAlbumsAfter1990ByArtist = ???
+
+  /*:SOLUTIONTO:*/
 
 }

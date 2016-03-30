@@ -251,24 +251,10 @@ object Rating {
 }
 ```
 
-## 760 # Column Type
+## 760 # Custom Column Types - Conversion Functions
 
-To defined the mapping we need a ColumnType to provide the mapping between the type and is corresponding
- database type.  To do this we create a type class that maps the Rating class into something Slick can
- already understand and store in a column.  In this case we are going to use an ```Int```.
-
-```scala
-  implicit val columnType: BaseColumnType[Rating] =
-    MappedColumnType.base[Rating, Int](Rating.toInt, Rating.fromInt)
-```
-
-We are using a helper method ```MappedColumnType.base``` to create a type class mapping ```Rating``` to ```Int```.
-To use this method we must provide two methods (called ```toInt``` and ```fromInt```) which covert to and from the
-database type respectively.
-
-## 770 # Column Types - Conversion Functions
-
-So lets show these two functions, there are no real surprises here:
+First we need to define the functions to map between Rating and a database type.  In this case we will use ```Int```
+as a natural mapping for an enumeration.  The two functions added to ```Rating``` look like this:
 
 ```scala
   def fromInt(stars: Int): Rating = stars match {
@@ -283,20 +269,40 @@ So lets show these two functions, there are no real surprises here:
   def toInt(rating: Rating): Int = rating.stars
 ```
 
-When imported into the code using it, the implicit type class provides all the information that Slick
-needs to manage the database conversions of ```Rating```.
+No real surprises here - now we need to make these conversions available to Slick.
 
-## 780 # Column Types - Where the type class lives
+
+## 770 # Custom Column Types - ColumnType
+
+We need to define a ColumnType to provide the mapping between the type and is corresponding
+ database type.  This implicit provides mappings both ways, from ```Rating``` to ```Int``` and vice-versa.
+
+```scala
+  implicit val columnType: BaseColumnType[Rating] =
+    MappedColumnType.base[Rating, Int](Rating.toInt, Rating.fromInt)
+```
+
+We are using a helper method ```MappedColumnType.base``` to create a type class mapping ```Rating``` to ```Int``` using
+the mapping functions we defined in the previous lesson.
+
+## 780 # Custom Column Types - Where the type class lives
 
 One note about the location of the type class in this example.
 For simplicity within our examples we have put the implicit type class and helper methods directly into rating.
 You are not obliged to do this and it keeps your model classes simpler if you separate data (the case class) from the
 helper methods separate.  The type class implicit simply needs to be in scope for the table definition.
 
-## 790 # Column Types - Your turn
+## 790 # Custom Column Types - Your turn
 
 In this exercise we want you to add a ```rating``` of type ```Rating``` to the case class and then add them to the
 table column mappings and default projection.  The ```Rating``` class has already been included in scope.
+
+We have already added to the ```toInt``` and ```fromInt``` to Rating, but you will need to add the implicit column type:
+
+```scala
+  implicit val columnType: BaseColumnType[Rating] =
+    MappedColumnType.base[Rating, Int](Rating.toInt, Rating.fromInt)
+```
 
 @:editor file=TableAddRating.scala
 
@@ -307,9 +313,9 @@ queries.
 
 Selecting data is 90% of the work we are going to be doing with databases.
 
-### Queries vs Actions
+### Select Queries - Queries vs Actions
 
-We briefly mentioned Actions earlier - an Action is task to be run on the database with
+Action is task to be run on the database with
 
 ```scala
 db.run(myAction)
@@ -322,7 +328,7 @@ AlbumTable.filter(_.artist === "Spice girls")
 .result
 ```
 
-Above is an example Action for selecting all Albums by the Spice Girls, let us dissect it.  The first line creates a
+Above is an example Action for selecting all Albums by the Spice Girls.  The first line creates a
  query on the ```AlbumTable``` table query object.  ```AlbumTable``` represents the query ```select * from albums```.
  Query objects have methods on them for adding clauses to an SQL statement.  The filter method adds a WHERE clause so
  we are filtering down the results to only select albums by the Spice Girls.

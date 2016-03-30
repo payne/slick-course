@@ -13,10 +13,7 @@ object TableAddRating {
     case object Meh     extends Rating(2)
     case object Aaargh  extends Rating(1)
 
-    implicit val columnType: BaseColumnType[Rating] =
-      MappedColumnType.base[Rating, Int](Rating.toInt, Rating.fromInt)
-
-    private def fromInt(stars: Int): Rating = stars match {
+    def fromInt(stars: Int): Rating = stars match {
       case 5 => Awesome
       case 4 => Good
       case 3 => NotBad
@@ -25,7 +22,7 @@ object TableAddRating {
       case _ => sys.error("Ratings only apply from 1 to 5")
     }
 
-    private def toInt(rating: Rating): Int = rating.stars
+    def toInt(rating: Rating): Int = rating.stars
   }
 
   import Rating._
@@ -48,36 +45,18 @@ object TableAddRating {
 
 
   lazy val AlbumTable = TableQuery[AlbumTable]
-
-  val createTableAction =
-    AlbumTable.schema.create
-
-  val insertAlbumsAction =
-    AlbumTable ++= Seq(
-      Album( "Keyboard Cat"  , "Keyboard Cat's Greatest Hits", 2009),
-      Album( "Spice Girls"   , "Spice"                       , 1996),
-      Album( "Rick Astley"   , "Whenever You Need Somebody"  , 1987),
-      Album( "Manowar"       , "The Triumph of Steel"        , 1992),
-      Album( "Justin Bieber" , "Believe"                     , 2013))
-
-  val selectAlbumsAction =
-    AlbumTable.result
-
-  // Database -----------------------------------
-
-  val db = Database.forConfig("dbconfig")
-
   /*:CODETO:*/
 
   /*:SOLUTIONFROM:*/
-  // solution
-//
 //  case class Album(
 //                    artist : String,
 //                    title  : String,
 //                    year   : Int,
 //                    rating : Rating,
 //                    id     : Long = 0L)
+//
+//  implicit val columnType: BaseColumnType[Rating] =
+//    MappedColumnType.base[Rating, Int](Rating.toInt, Rating.fromInt)
 //
 //  class AlbumTable(tag: Tag) extends Table[Album](tag, "albums") {
 //    def artist = column[String]("artist")
@@ -91,4 +70,11 @@ object TableAddRating {
 //
 //  lazy val AlbumTable = TableQuery[AlbumTable]
   /*:SOLUTIONTO:*/
+
+  // Database -----------------------------------
+
+  val db = Database.forConfig("dbconfig")
+
+  val createTableAction =
+    AlbumTable.schema.create
 }

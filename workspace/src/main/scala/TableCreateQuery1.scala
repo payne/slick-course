@@ -60,6 +60,7 @@ object TableCreateQuery1 {
 
 //  val notBadAlbumsAfter1990ByArtist = ???
 
+  /*:CODETO:*/
   /*:SOLUTIONFROM:*/
 
   val notBadAlbumsAfter1990ByArtist = ???

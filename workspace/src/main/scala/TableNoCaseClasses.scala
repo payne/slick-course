@@ -1,8 +1,10 @@
 import slick.driver.H2Driver.api._
 
 object TableNoCaseClasses {
+  // N.B. This has been removed from the course for now.
 
   /*:CODEFROM:*/
+  // this exercise is not finished
   case class Album(
                     artist : String,
                     title  : String,

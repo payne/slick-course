@@ -10,6 +10,7 @@ object JoinsExplicit {
   }
 
   /*:CODEFROM:*/
+  // The exercise is not ready yet
   val explicitJoin = ???
   /*:CODETO:*/
 

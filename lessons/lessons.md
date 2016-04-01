@@ -1,27 +1,24 @@
 
 ## 0 # Welcome to the Essential Slick Course
 
-*N.b. This course is under development, the text and exercises may be incomplete*
+*Note that this course is under development and the text and exercises may be incomplete*
 
-Welcome to the essential slick course.
+Welcome to the essential Slick course.
 
-This course assumes a working knowledge of Scala and at basic database concept.
+This course assumes a working knowledge of Scala and of basic database concepts.
 
-The course aims to give you working knowledge of the key concepts of Slick by both discussing them and having exercises
- to test your knowledge.
+The course aims to give you working knowledge of the key concepts of Slick by both discussing them and using exercises to test your knowledge.
 
-If you want to talk to us about it the course either email Rory (rory@scalanator.io) or come and chat to use on the
- [Gitter channel](https://gitter.im/ScalanatorIO/slick-course) channel.
+To talk to us about it the course email Rory (rory@scalanator.io) or come and chat to us on:
+[Gitter channel](https://gitter.im/ScalanatorIO/slick-course) channel.
 
-You can find the full course content and code in the [Github repository]
-
-This course is based upon the Slick workshop from [Scala Exchange 2015].
+You can find the full course content and code in the [Github repository], this course is based upon the Slick workshop from [Scala Exchange 2015].
 
 Copyright 2016 [Dave Gurnell] of [Underscore].
 
-Both the original workshop contents and this course contents licensed under [CC-BY-NC-SA 4.0],
+Both the original workshop contents and this course contents are licensed under [CC-BY-NC-SA 4.0],
 
-Original workshop code and this course code licensed [Apache 2.0].
+The original workshop code and this course code are licensed [Apache 2.0].
 
 Click next to move onto the first lesson.
 
@@ -39,7 +36,7 @@ Click next to move onto the first lesson.
 
 * Slick 3 is the industry standard library for accessing relational databases in Scala
 * Unlike a lot of JVM database layers (such as Hibernate), it is *not* an ORM (Object Relational Mapper)
-    ORM attempt to map in memory object graphs into tables (which are not a perfect match).
+    ORMs attempt to map in memory object graphs into tables (which are not a perfect match).
     Slick treats the database relational model as a first class citizen and gives you tools to work wtih
     the relational model.
 * Allows explicit communication with the database:
@@ -53,13 +50,13 @@ Click next to move onto the first lesson.
     * Queries built using a Scala DSL
     * Fully Asynchronous
 
-## 200 # What are are going to cover
+## 200 # What we are going to cover
 
-We will cover 5 key concepts
+We will be looking at five key concepts:
 
 * Tables - Defining relationships between Scala datatypes and the database.
-* Queries - A DSL for building SQL 
-* Actions - Allow us to sequence queries together and send them to the database
+* Queries - A DSL for building SQL
+* Actions - Allowing us to sequence queries together and send them to the database
 * Joins - Allowing us to build queries that pull data from multiple sources
 * Profiles/Drivers - Slicks way of representing different databases and their capabilities.
 
@@ -75,18 +72,15 @@ import slick.driver.H2Driver.api._
 
 The ```scala.concurrent``` imports are to import standard Scala Futures.
 
-All of the Slick specific code comes from a single import 
+All of the Slick specific code comes from a single import:
 
-```scala 
+```scala
 import slick.driver.H2Driver.api._
 ```
 
-As you can see the import contains the specific version of Slick for the H2 database.  This allows the Slick api to
-capture the differences in capabilities between different database types.  Most features are common but there are
-some specific features available only in certain databases.
+The import contains the specific version of Slick for the H2 database.  This allows the Slick api to capture the differences in capabilities between different database types.  Most features are common but there are some specific features available only in certain databases.
 
-When you are using this in your own project you would import the version specific for your database (e.g. MySQL,
-PostgreSQL etc). This will be covered in more detail in the Profiles section later.
+When you are using this in your own project you would import the version specific for your database (e.g. MySQL, PostgreSQL etc). This will be covered in more detail in the Profiles section later.
 
 ## 350 # Tables - The Data
 
@@ -215,21 +209,7 @@ One common misconception about Slick is that it can only store tuples of primiti
 
 The default project we have already seen (shown above) uses the convenience methods provided by the case class to
 perform the mapping (using ```tupled``` and ```unappy```).  However we can replace these methods with any methods
-we want to store any datatype.  To demonstrate this we are going to make ```Album``` a normal class instead of a case
-class.
-
-## 710 # Custom Table Types Exercise
-
-* Remove the case class keyword from Album
-* Create ```defineAlbum``` and ```extractAlbum``` methods
-* Update the projection method to use the methods
-
-@:editor file=TableNoCaseClasses.scala
-
-## 720 # Custom Table Types Exercise review
-
-The exercise demonstrated that you map data from an arbitrary class but at the cost of extra boilerplate code.
-Effective we are re-implementing the case class ```tupled``` and ```unapply``` method.
+we want to store any datatype.
 
 ## 750 # Custom Column Types
 

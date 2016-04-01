@@ -13,10 +13,7 @@ object SharedOneTable {
     case object Meh     extends Rating(2)
     case object Aaargh  extends Rating(1)
 
-    implicit val columnType: BaseColumnType[Rating] =
-      MappedColumnType.base[Rating, Int](Rating.toInt, Rating.fromInt)
-
-    private def fromInt(stars: Int): Rating = stars match {
+    def fromInt(stars: Int): Rating = stars match {
       case 5 => Awesome
       case 4 => Good
       case 3 => NotBad
@@ -25,8 +22,12 @@ object SharedOneTable {
       case _ => sys.error("Ratings only apply from 1 to 5")
     }
 
-    private def toInt(rating: Rating): Int = rating.stars
+    def toInt(rating: Rating): Int = rating.stars
   }
+
+  implicit val columnType: BaseColumnType[Rating] =
+    MappedColumnType.base[Rating, Int](Rating.toInt, Rating.fromInt)
+
 
   case class Album(
                     artist : String,
@@ -45,15 +46,14 @@ object SharedOneTable {
     def * = (artist, title, year, rating, id) <> (Album.tupled, Album.unapply)
   }
 
-
   lazy val AlbumTable = TableQuery[AlbumTable]
-  val createTableAction =
-    AlbumTable.schema.create
-
-  // Database -----------------------------------
-
-  val db = Database.forConfig("dbconfig")
-
+//  val createTableAction =
+//    AlbumTable.schema.create
+//
+//  // Database -----------------------------------
+//
+//  val db = Database.forConfig("dbconfig")
+//
 
 
 }

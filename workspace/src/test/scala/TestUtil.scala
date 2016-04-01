@@ -1,10 +1,15 @@
 
 import org.scalatest.Matchers
+import slick.dbio.DBIO
 
+import scala.concurrent.Await
 import scala.reflect.runtime.universe
 import scala.reflect.runtime.universe._
-
+import scala.concurrent.duration._
 object TestUtil {
+
+  def exec[T](db: slick.driver.H2Driver.backend.DatabaseDef, action: DBIO[T]): T =
+    Await.result(db.run(action), 2 seconds)
 
   case class ColumnData(name: String, sqlType: Int, sqlTypeString: String)
 

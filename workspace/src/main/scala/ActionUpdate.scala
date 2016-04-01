@@ -10,6 +10,7 @@ object ActionUpdate {
   }
 
   /*:CODEFROM:*/
+  // The exercise is not ready yet
   def updateToMehAfterYear(year: Int) = {
     ???
   }

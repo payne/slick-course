@@ -11,6 +11,7 @@ object JoinsImplicit {
 
   /*:CODEFROM:*/
   val implicitJoin = {
+    // The exercise is not ready yet
     ???
   }
   /*:CODETO:*/

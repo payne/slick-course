@@ -10,6 +10,7 @@ object ActionDelete {
   }
 
   /*:CODEFROM:*/
+  // The exercise is not ready yet
   def deleteAlbumByArtist(artist: String) = {
     ???
   }

@@ -52,3 +52,16 @@ The last Action we are going to look at now is select.  This action is the equiv
 That is it for Actions right now, we will visit them again later in the tutorial.
 
 We have one last thing to talk about and then it is your turn.
+
+## 710 # Custom Table Types Exercise
+
+* Remove the case class keyword from Album
+* Create ```defineAlbum``` and ```extractAlbum``` methods
+* Update the projection method to use the methods
+
+@:editor file=TableNoCaseClasses.scala
+
+## 720 # Custom Table Types Exercise review
+
+The exercise demonstrated that you map data from an arbitrary class but at the cost of extra boilerplate code.
+Effective we are re-implementing the case class ```tupled``` and ```unapply``` method.

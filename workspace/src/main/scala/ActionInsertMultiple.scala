@@ -10,6 +10,7 @@ object ActionInsertMultiple {
   }
 
   /*:CODEFROM:*/
+  // The exercise is not ready yet
   def insertAlbumAction(albums: Seq[Album]) = {
 
   }

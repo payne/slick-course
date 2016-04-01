@@ -10,11 +10,13 @@ object ActionAddTypes {
   }
 
   /*:CODEFROM:*/
-      // TODO add types exercise
-      //  selectAction
-      //  insertAction
-      //  updateAction
-      //  and your answers to the previous exercise
+      // The exercise is not ready yet
   /*:CODETO:*/
+
+  // TODO add types exercise
+  //  selectAction
+  //  insertAction
+  //  updateAction
+  //  and your answers to the previous exercise
 
 }

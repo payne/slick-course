@@ -10,6 +10,7 @@ object ActionComposition {
   }
 
   /*:CODEFROM:*/
+  // The exercise is not ready yet
   def insertNewAlbum(artist: String, title: String, year: Int) = {
     ???
   }

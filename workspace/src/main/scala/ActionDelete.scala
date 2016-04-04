@@ -15,5 +15,10 @@ object ActionDelete {
     ???
   }
   /*:CODETO:*/
+  /*:SOLUTIONFROM:*/
+//  def deleteAlbumByArtist(artist: String) = {
+//    ???
+//  }
+  /*:SOLUTIONTO:*/
 
 }

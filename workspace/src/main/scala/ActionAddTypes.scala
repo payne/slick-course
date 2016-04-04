@@ -2,6 +2,7 @@ import slick.driver.H2Driver.api._
 
 object ActionAddTypes {
 
+  // this exercise has been removed until a good checking solution is available
   import SharedOneTable._
 
   // used to remove unused imports
@@ -12,6 +13,8 @@ object ActionAddTypes {
   /*:CODEFROM:*/
       // The exercise is not ready yet
   /*:CODETO:*/
+  /*:SOLUTIONFROM:*/
+  /*:SOLUTIONTO:*/
 
   // TODO add types exercise
   //  selectAction

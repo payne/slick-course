@@ -65,3 +65,10 @@ We have one last thing to talk about and then it is your turn.
 
 The exercise demonstrated that you map data from an arbitrary class but at the cost of extra boilerplate code.
 Effective we are re-implementing the case class ```tupled``` and ```unapply``` method.
+
+## 2170 # Actions - Statement types exercise
+
+Add type annotations to the below:
+
+@:editor file=ActionAddTypes.scala
+

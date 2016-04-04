@@ -15,4 +15,6 @@ object ActionInsertMultiple {
 
   }
   /*:CODETO:*/
+  /*:SOLUTIONFROM:*/
+  /*:SOLUTIONTO:*/
 }

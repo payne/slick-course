@@ -10,15 +10,15 @@ object ActionInsertSingle {
   }
 
   /*:CODEFROM:*/
-//  def insertAlbumAction(album: Album) = {
-//    ???
-//  }
+  def insertAlbumAction(album: Album) = {
+    ???
+  }
   /*:CODETO:*/
 
   /*:SOLUTIONFROM:*/
-  def insertAlbumAction(album: Album) = {
-    AlbumTable += album
-  }
+//  def insertAlbumAction(album: Album) = {
+//    AlbumTable += album
+//  }
   /*:SOLUTIONTO:*/
 
 }

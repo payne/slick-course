@@ -968,12 +968,6 @@ create table "albums" (
 
 Note that the exact SQL is dependent on the database type.
 
-## 2170 # Actions - Statement types exercise
-
-Add type annotations to the below:
-
-@:editor file=ActionAddTypes.scala
-
 ## 2200 # Actions - Combinators
 
 One last thing we need to cover for actions is combinators.  Back when we were looking at queries we stated that

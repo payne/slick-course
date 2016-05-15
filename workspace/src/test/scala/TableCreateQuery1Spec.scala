@@ -1,36 +1,20 @@
-import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
-
-import scala.reflect.runtime.{universe=>ru}
 import slick.driver.H2Driver.api._
 
-class TableCreateQuery1Spec extends FlatSpec with BeforeAndAfter with Matchers {
-
-  val sm = new TestSecurityManager
-
-  before {
-    System.setSecurityManager(sm)
-  }
+class TableCreateQuery1Spec extends AbstractDBSpec {
 
   "TableCreateQuery1" should "pass" in {
     import SharedOneTable._
     import TableCreateQuery1._
     import TestUtil._
 
-    def getTypeTag[T: ru.TypeTag](obj: T) = ru.typeTag[T]
+    val methodName = "notBadAlbumsAfter1990ByArtist"
+    val expectedType = "=> slick.lifted.Query[SharedOneTable.AlbumTable,SharedOneTable.AlbumTable#TableElementType,Seq]"
 
-    try {
-      val queryType = getTypeTag(notBadAlbumsAfter1990ByArtist).tpe
+    checkMethodCorrect[TableCreateQuery1.type](methodName, expectedType, "a query action")
 
-      val expectedType = "slick.lifted.Query[SharedOneTable.AlbumTable,SharedOneTable.AlbumTable#TableElementType,Seq]"
-      assert(expectedType == queryType.toString, "TESTFAIL 'notBadAlbumsAfter1990ByArtist' is not a AlbumTable query")
-
-      // force the value now we have checked the type
-    } catch {
-      case e: NotImplementedError =>
-        fail("TESTFAIL you have not updated 'notBadAlbumsAfter1990ByArtist'")
-    }
     val query = notBadAlbumsAfter1990ByArtist.asInstanceOf[slick.lifted.Query[SharedOneTable.AlbumTable,SharedOneTable.AlbumTable#TableElementType,Seq]]
 
+    ensureImplemented(notBadAlbumsAfter1990ByArtist, methodName)
 
     val createTableAction =
       AlbumTable.schema.create
@@ -60,9 +44,7 @@ class TableCreateQuery1Spec extends FlatSpec with BeforeAndAfter with Matchers {
     val correctYearsQuery = AlbumTable.filter(r => r.year > 1990)
     val correctRatingsQuery = AlbumTable.filter(r => r.rating === (Rating.NotBad: Rating))
 
-    val db: slick.driver.H2Driver.backend.DatabaseDef = Database.forConfig("dbconfig")
-
-    try {
+    withTestDatabase { db =>
       exec(db, createTableAction)
       exec(db, insertsAction)
 
@@ -88,8 +70,6 @@ class TableCreateQuery1Spec extends FlatSpec with BeforeAndAfter with Matchers {
 
         fail("TESTFAIL Your filter does not match the expected output")
       }
-    } finally {
-      db.close()
     }
   }
 }

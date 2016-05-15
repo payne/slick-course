@@ -1,20 +1,10 @@
-import org.scalatest.{Matchers, BeforeAndAfter, FlatSpec}
-import slick.driver.H2Driver.api._
-import scala.reflect.runtime.universe._
+import scala.reflect.runtime.universe.typeOf
 
-class TableAddYearSpec extends FlatSpec with BeforeAndAfter with Matchers {
+class TableAddYearSpec extends AbstractDBSpec {
 
-  import TableAddYear._
-
-  val sm = new TestSecurityManager
-
-  before {
-    System.setSecurityManager(sm)
-  }
-
-  "TableAddYearSpec" should "Do stuff" in {
+  "TableAddYearSpec" should "pass" in {
+    import TableAddYear._
     import TestUtil._
-    val db = Database.forConfig("dbconfig")
 
     caseClassChecker(typeOf[Album], Seq(
       CheckFieldItem("artist", typeOf[String]),
@@ -23,6 +13,8 @@ class TableAddYearSpec extends FlatSpec with BeforeAndAfter with Matchers {
       CheckFieldItem("id", typeOf[Long])
     ))
 
-    db.close()
+//    withTestDatabase { db =>
+//
+//    }
   }
 }

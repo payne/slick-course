@@ -70,11 +70,4 @@ object TableAddRating {
 //
 //  lazy val AlbumTable = TableQuery[AlbumTable]
   /*:SOLUTIONTO:*/
-
-  // Database -----------------------------------
-
-  val db = Database.forConfig("dbconfig")
-
-  val createTableAction =
-    AlbumTable.schema.create
 }

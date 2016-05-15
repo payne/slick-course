@@ -11,10 +11,13 @@ object ActionInsertMultiple {
 
   /*:CODEFROM:*/
   // The exercise is not ready yet
-  def insertAlbumAction(albums: Seq[Album]) = {
+  def insertAlbumsAction(albums: Seq[Album]) = {
 
   }
   /*:CODETO:*/
   /*:SOLUTIONFROM:*/
+//  def insertAlbumsAction(albums: Seq[Album]) = {
+//    AlbumTable ++= albums
+//  }
   /*:SOLUTIONTO:*/
 }

@@ -1,36 +1,21 @@
-import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
-
-import scala.reflect.runtime.{universe=>ru}
 import slick.driver.H2Driver.api._
 
-class TableCreateQuery2Spec extends FlatSpec with BeforeAndAfter with Matchers {
+class TableCreateQuery2Spec extends AbstractDBSpec {
 
-  val sm = new TestSecurityManager
-
-  before {
-    System.setSecurityManager(sm)
-  }
-
-  "TableCreateQuery12" should "pass" in {
+  "TableCreateQuery2" should "pass" in {
     import SharedOneTable._
     import TableCreateQuery2._
     import TestUtil._
 
-    def getTypeTag[T: ru.TypeTag](obj: T) = ru.typeTag[T]
 
-    try {
-      val queryType = getTypeTag(albumTitlesOrderedByYear).tpe
+    val methodName = "albumTitlesOrderedByYear"
+    val expectedType = "=> slick.lifted.Query[slick.lifted.Rep[String],String,Seq]"
 
-      val expectedType = "slick.lifted.Query[slick.lifted.Rep[java.lang.String],java.lang.String,Seq]"
-      assert(expectedType == queryType.toString, "TESTFAIL 'notBadAlbumsAfter1990ByArtist' is not a AlbumTable query")
+    checkMethodCorrect[TableCreateQuery2.type](methodName, expectedType, "a query action")
 
-      // force the value now we have checked the type
-    } catch {
-      case e: NotImplementedError =>
-        fail("TESTFAIL you have not updated 'notBadAlbumsAfter1990ByArtist'")
-    }
     val query = albumTitlesOrderedByYear.asInstanceOf[slick.lifted.Query[slick.lifted.Rep[java.lang.String],java.lang.String,Seq]]
 
+    ensureImplemented(query, methodName)
 
     val createTableAction =
       AlbumTable.schema.create
@@ -48,9 +33,7 @@ class TableCreateQuery2Spec extends FlatSpec with BeforeAndAfter with Matchers {
 
     val correctQuery = AlbumTable.sortBy(_.year).map(_.title)
 
-    val db: slick.driver.H2Driver.backend.DatabaseDef = Database.forConfig("dbconfig")
-
-    try {
+    withTestDatabase { db =>
       exec(db, createTableAction)
       exec(db, insertsAction)
 
@@ -65,8 +48,6 @@ class TableCreateQuery2Spec extends FlatSpec with BeforeAndAfter with Matchers {
         else
           fail("TESTFAIL You have not ordered the titles by year")
       }
-    } finally {
-      db.close()
     }
   }
 }

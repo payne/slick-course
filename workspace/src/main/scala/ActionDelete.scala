@@ -10,15 +10,14 @@ object ActionDelete {
   }
 
   /*:CODEFROM:*/
-  // The exercise is not ready yet
-  def deleteAlbumByArtist(artist: String) = {
-    ???
-  }
+//  def deleteAlbumByArtist(artist: String) = {
+//    AlbumTable.???
+//  }
   /*:CODETO:*/
   /*:SOLUTIONFROM:*/
-//  def deleteAlbumByArtist(artist: String) = {
-//    ???
-//  }
+  def deleteAlbumByArtist(artist: String) = {
+    AlbumTable.filter(_.artist === artist).delete
+  }
   /*:SOLUTIONTO:*/
 
 }

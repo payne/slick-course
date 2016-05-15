@@ -5,18 +5,16 @@
 
 Welcome to the essential Slick course.
 
-This course assumes a working knowledge of Scala and of basic database concepts.
+This course assumes a working knowledge of Scala and basic database concepts.  It  aims to give you a working knowledge of the key concepts of Slick by a combination of discussion and practical exercises to test and extend your knowledge.
 
-The course aims to give you working knowledge of the key concepts of Slick by both discussing them and using exercises to test your knowledge.
-
-To talk to us about it the course email Rory (rory@scalanator.io) or come and chat to us on:
+To talk to us about the course email Rory (rory@scalanator.io) or come and chat to us on:
 [Gitter channel](https://gitter.im/ScalanatorIO/slick-course) channel.
 
-You can find the full course content and code in the [Github repository], this course is based upon the Slick workshop from [Scala Exchange 2015].
+You can find the full course content and code in the [Github repository]. This course is based upon the Slick workshop from [Scala Exchange 2015].
 
 Copyright 2016 [Dave Gurnell] of [Underscore].
 
-Both the original workshop contents and this course contents are licensed under [CC-BY-NC-SA 4.0],
+Both the original workshop contents and this course contents are licensed under [CC-BY-NC-SA 4.0]
 
 The original workshop code and this course code are licensed [Apache 2.0].
 
@@ -34,31 +32,29 @@ Click next to move onto the first lesson.
 
 ## 100 # What is Slick?
 
-* Slick 3 is the industry standard library for accessing relational databases in Scala
-* Unlike a lot of JVM database layers (such as Hibernate), it is *not* an ORM (Object Relational Mapper)
-    ORMs attempt to map in memory object graphs into tables (which are not a perfect match).
-    Slick treats the database relational model as a first class citizen and gives you tools to work wtih
-    the relational model.
-* Allows explicit communication with the database:
-    * Define datatypes
-    * Map them onto tables
-    * Build queries
-    * Issue queries and parse results
+* Slick 3 is the industry standard library for accessing relational databases in Scala.
+* Unlike a lot of JVM database layers (such as Hibernate), it is *not* an ORM (Object Relational Mapper). ORMs attempt to map in memory object graphs into tables (which may not be a perfect match).  Slick treats the database relational model as a first class citizen and gives you tools to work with the relational model.
+Slick allows
+    * Explicit communication with the database:
+    * By defining datatypes
+    * Mapping them onto tables
+    * Building queries
+    * Issuing queries and parsing results
 * Unlike traditional JDBC drivers it is:
     * Functional
     * Typesafe
-    * Queries built using a Scala DSL
     * Fully Asynchronous
+    * Queries can be built using a Scala DSL
 
 ## 200 # What we are going to cover
 
-We will be looking at five key concepts:
+In this section we will be looking at five key concepts:
 
-* Tables - Defining relationships between Scala datatypes and the database.
-* Queries - A DSL for building SQL
+* Tables - Defining the relationships between Scala datatypes and the database
+* A DSL for building SQL queries
 * Actions - Allowing us to sequence queries together and send them to the database
 * Joins - Allowing us to build queries that pull data from multiple sources
-* Profiles/Drivers - Slicks way of representing different databases and their capabilities.
+* Profiles/Drivers - Slicks way of representing different databases and their capabilities
 
 ## 300 # A quick note on imports
 
@@ -93,9 +89,7 @@ Let's start by defining our data.  Here is a case class representing an Album:
     id     : Long = 0L)
 ```
 
-The only difference compared to a standard in-memory case class is we have specified an ```id``` field.  It will be
-our primary key within the database.  We have given it a default value so we do not need to provide one when
-creating Albums.
+The only difference compared to a standard in-memory case class is that we have specified an ```id``` field.  This will be our primary key within the database.  We have given it a default value so we do not need to provide one when creating Albums.
 
 ## 400 # Tables - Mapping
 
@@ -109,13 +103,12 @@ Next we need to define the database table mapping for the Album class:
     def * = (artist, title, id) <> (Album.tupled, Album.unapply)
   }
 ```
-`We define a class that extends the stand Slick ```Table``` class representing an SQL table for storing instances of
-Album.  There are a few key points:
+`We define a class that extends the standard Slick ```Table``` class representing an SQL table for storing instances of Album.  There are a few key points:
 
-* We define ```Table[Album]``` meaning this table is going to store Albums. 
+* We define ```Table[Album]``` meaning this table is going to store Albums.
 * The name ```"album"``` defines the name of the table within the database.
-* We define each column, ```artist``` and ```title``` both define columns that store a ```String``` with a column name that matches the name.
-* The mapping for the ```id``` column has two extra flags
+* We define two column, ```artist``` and ```title```. Both columns  that store a ```String``` with a column name that matches the name.
+* The mapping for the ```id``` column has two extra flags:
     * ```O.PrimaryKey``` - This value represents a unique identifier for a row in the database
     * ```O.AutoInc``` - Means that Slick will use the database to provide the value rather than us.
 
@@ -127,33 +120,27 @@ We will discuss the ```*``` method in the next lesson.
    def * = (artist, title, id) <> (Album.tupled, Album.unapply)
 ```
 
-The ```*``` method (known as the 'default projection') for a table tells Slick how to convert between the case class
-and the table columns.
+The ```*``` method (known as the 'default projection') for a table tells Slick how to convert between the case class and the table columns.
 
-The left side is a tuple of columns ```(artist, title, id)``` representing the three columns we want to read
-whenever we select data from the database and that we want to write whenever we insert data into the database.
+The left side is a tuple of columns ```(artist, title, id)``` representing the three columns we want to read whenever we select data from the database and the columns that we want to write to whenever we insert data into the database.
 
-The ```<>``` (diamond) operator is a method which is implicitly added onto tuple (a convenience method) that takes two
-function arguments:
+The ```<>``` (diamond) operator is a method which is implicitly added onto tuple (a convenience method) that takes two function arguments:
 
 * ```Album.tupled``` - A function that converts from the case class to a tuple of three elements (artist, title and id)
-* ```Album.unapply``` - A function that converts from a tuple into an instance of Album.
+* ```Album.unapply``` - A function that converts from a tuple into an instance of Album
 
-So now we have told Slick about the table name, table structure and how to read and write the ```Album``` case class
-into database format.
+So now we have told Slick about the table name, table structure and how to read and write the ```Album``` case class into database format.
 
 ## 475 # Tables - The Table Query
 
-The last part we need to define in the table query.
+The last part we need to define is the table query.
 
 It is defined like this:
 ```scala
 lazy val AlbumTable = TableQuery[AlbumTable]
 ```
 
-It is a value that is instance of ```TableQuery``` (not our AlbumTable class).  This object provides a root object for
-creating queries on our table.
-
+It is a value that is an instance of ```TableQuery``` (not our AlbumTable class).  This object provides a root object for creating queries on our table.
 
 ## 500 # Tables - Summary
 
@@ -167,7 +154,8 @@ We have created three things to allow storing of our data to a database table.
 * A Table Query (val ```AlbumTable```) which forms the root of any queries made against the table.
 
 The code and naming above is a standard Slick convention and all examples and exercises within the course will use them.
- The various options available in table setup are specified in the Slick documentation.
+The various options available in table setup are specified in the Slick documentation.
+
 
 ## 650 # Executing queries
 
@@ -185,7 +173,7 @@ Now we have a database handle we can execute Actions against the database:
 
 The ```run``` take an action and return a future (they are executed asynchronously).
 So for the above example we have created a helper method ```exec``` to run the action and wait for the results.
-In normal you are able to handle the results asynchronously as well.
+Normally you are able to handle the results asynchronously as well.
 
 ## 675 # Tables - Your turn
 
@@ -207,13 +195,11 @@ One common misconception about Slick is that it can only store tuples of primiti
     def * = (artist, title, id) <> (Album.tupled, Album.unapply)
 ```
 
-The default project we have already seen (shown above) uses the convenience methods provided by the case class to
-perform the mapping (using ```tupled``` and ```unappy```).  However we can replace these methods with any methods
-we want to store any datatype.
+The default project we have already seen (shown above) uses the convenience methods provided by the case class to perform the mapping (using ```tupled``` and ```unapply```).  However we can replace these methods with any methods we want to store any datatype.  To demonstrate this we are going to make ```Album``` a normal class instead of a case class.
 
 ## 750 # Custom Column Types
 
-Something more useful in our day to day coding is how to store a custom type into the database.
+Something more useful in day to day coding is how to store a custom type into the database.
 For this example we are going to define a Rating class (a nice typesafe enumeration):
 
 ```scala
@@ -233,8 +219,7 @@ object Rating {
 
 ## 760 # Custom Column Types - Conversion Functions
 
-First we need to define the functions to map between Rating and a database type.  In this case we will use ```Int```
-as a natural mapping for an enumeration.  The two functions added to ```Rating``` look like this:
+First we need to define the functions to map between Rating and a database type.  In this case we will use ```Int``` as a natural mapping for an enumeration.  The two functions added to ```Rating``` look like this:
 
 ```scala
   def fromInt(stars: Int): Rating = stars match {
@@ -251,31 +236,26 @@ as a natural mapping for an enumeration.  The two functions added to ```Rating``
 
 No real surprises here - now we need to make these conversions available to Slick.
 
-
 ## 770 # Custom Column Types - ColumnType
 
-We need to define a ColumnType to provide the mapping between the type and is corresponding
- database type.  This implicit provides mappings both ways, from ```Rating``` to ```Int``` and vice-versa.
+We need to define a ColumnType to provide the mapping between the type and its corresponding database type.  This implicit provides mappings both ways, from ```Rating``` to ```Int``` and vice-versa.
 
 ```scala
   implicit val columnType: BaseColumnType[Rating] =
     MappedColumnType.base[Rating, Int](Rating.toInt, Rating.fromInt)
 ```
 
-We are using a helper method ```MappedColumnType.base``` to create a type class mapping ```Rating``` to ```Int``` using
-the mapping functions we defined in the previous lesson.
+We are using a helper method ```MappedColumnType.base``` to create a type class mapping ```Rating``` to ```Int``` using the mapping functions we defined in the previous lesson.
 
 ## 780 # Custom Column Types - Where the type class lives
 
 One note about the location of the type class in this example.
 For simplicity within our examples we have put the implicit type class and helper methods directly into rating.
-You are not obliged to do this and it keeps your model classes simpler if you separate data (the case class) from the
-helper methods separate.  The type class implicit simply needs to be in scope for the table definition.
+You are not obliged to do this but it keeps your model classes simpler if you separate data (the case class) from the helper methods.  The type class implicit simply needs to be in scope for the table definition.
 
 ## 790 # Custom Column Types - Your turn
 
-In this exercise we want you to add a ```rating``` of type ```Rating``` to the case class and then add them to the
-table column mappings and default projection.  The ```Rating``` class has already been included in scope.
+In this exercise we want you to add a ```rating``` of type ```Rating``` to the case class and then add them to the table column mappings and default projection.  The ```Rating``` class has already been included in scope.
 
 We have already added to the ```toInt``` and ```fromInt``` to Rating, but you will need to add the implicit column type:
 
@@ -288,14 +268,13 @@ We have already added to the ```toInt``` and ```fromInt``` to Rating, but you wi
 
 ## 800 # Select Queries
 
-We have covered all the basics of creating tables and mappings.  So now we will move onto queries, specifically SELECT
-queries.
+We have covered all the basics of creating tables and mappings.  So now we will move onto queries, specifically SELECT queries.
 
 Selecting data is 90% of the work we are going to be doing with databases.
 
 ### Select Queries - Queries vs Actions
 
-Action is task to be run on the database with
+Action is a task to be run on the database with
 
 ```scala
 db.run(myAction)
@@ -308,21 +287,15 @@ AlbumTable.filter(_.artist === "Spice girls")
 .result
 ```
 
-Above is an example Action for selecting all Albums by the Spice Girls.  The first line creates a
- query on the ```AlbumTable``` table query object.  ```AlbumTable``` represents the query ```select * from albums```.
- Query objects have methods on them for adding clauses to an SQL statement.  The filter method adds a WHERE clause so
- we are filtering down the results to only select albums by the Spice Girls.
+Above is an example Action for selecting all Albums by the Spice Girls.  The first line creates a query on the ```AlbumTable``` table query object.  ```AlbumTable``` represents the query ```select * from albums```.
+Query objects have methods on them for adding clauses to an SQL statement.  The filter method adds a WHERE clause so we are filtering down the results to only select albums by the Spice Girls.
 
 The ```.result``` call turns the query into an Action which allows it to be passed to ```db.run``` to be executed.
-So why do we have a difference between a query and an action?  Queries have methods for assembling SQL, adding where
-clauses, adding ordering clauses etc.   Actions have a similar set of methods but for doing sequencing operations on
-queries.  For example 'run this query after that query', chain this queries together etc.
+So why do we have a difference between a query and an action?  Queries have methods for assembling SQL, adding where clauses, adding ordering clauses etc.   Actions have a similar set of methods but for doing sequencing operations on queries.  For example 'run this query after that query', ‘chain these queries together’, etc.
 
-Both queries and actions are monadic so a lot of the method names are the same, ```flatmap```,```map```, ```filter```
-and so on, but the meaning of the methods are quite different leading to us having two distinct data types.
+Both queries and actions are monadic so a lot of the method names are the same, ```flatmap```,```map```, ```filter``` and so on, but the meaning of the methods are quite different leading to us having two distinct data types.
 
-So we will always start by building a query and then use some kind of method (in this case ```result``` to turn that
-into an action to do a particular type of operation.
+So we will always start by building a query and then use some kind of method (in this case ```result```) to turn that into an action to do a particular type of operation.
 
 ## 900 # Select Queries - Combinators
 
@@ -340,14 +313,12 @@ This represents the SQL query
 SELECT * FROM albums;
 ```
 
-So when we run this query we get back everything.  Applying combinators modifies the SQL which transforms the
-results we are going to get back.
-
+So when we run this query we get back everything.  Applying combinators modifies the SQL which transforms the results we are going to get back.
 
 ## 910 # Select Queries - Filter
 
-To restrict the results we get back from the database we can use the ```filter``` method.  In this example
-we are filtering by the ```artist```
+To restrict the results we get back from the database we can use the ```filter``` method.  In this example we are filtering by the ```artist```
+
 ```scala
 val selectWhereQuery =
   AlbumTable.filter(_.artist === “Spice Girls”)
@@ -363,13 +334,14 @@ WHERE artist = ‘Spice Girls’;
 
 ## 920 # Select Queries - Filters
 
-An important thing to here in:
+An important thing to here is:
+
 ```scala
 AlbumTable.filter(_.artist === “Spice Girls”)
 ```
 
 Is that the ```_``` does not represent an `Album` but an ```AlbumTable``` (i.e. the class we defined with the mappings).
-This is because we are building a query to run against the database.  we are using ```===``` rather than ```==```.
+This is because we are building a query to run against the database.  We are using ```===``` rather than ```==```.
 ```==``` in Scala is reserved for comparing two values, here we are not doing that, we are building an SQL expression.
 
 Most operations are the same as the are in Scala ```<```,```>```, ```&&``` except for two:
@@ -377,13 +349,11 @@ Most operations are the same as the are in Scala ```<```,```>```, ```&&``` excep
 * ```===``` replaces ```==```
 * ```=!=``` replaces ```!=```
 
-It is very similar to filtering a standard list in Scala, but we must keep in mind we are actually building an SQL
-expression to filter on.
+It is very similar to filtering a standard list in Scala, but we must keep in mind we are actually building an SQL expression to filter on.
 
 ## 930 # Select Queries - Sorting
 
-A similar principle for filtering goes for sorting. We use the ```sortBy``` method by providing a function to transform
-our table into an ascending or descending order clause.  So you can take any column and call ```.asc``` or ```.desc```
+A similar principle for filtering goes for sorting. We use the ```sortBy``` method by providing a function to transform our table into an ascending or descending order clause.  So you can take any column and call ```.asc``` or ```.desc```.
 
 
 ```scala
@@ -449,8 +419,7 @@ We can select individual columns in our results with a project query using ```ma
       .map(_.title)
 ```
 
-The map function is given the Album table as a parameter and we return the column or an expression involving the column
-that we want to select from the database.
+The map function is given the Album table as a parameter and we return the column or an expression involving the column that we want to select from the database.
 
 This is equivalent of the below SQL:
 
@@ -458,7 +427,6 @@ This is equivalent of the below SQL:
 SELECT title
 FROM albums;
 ```
-
 ## 970 # Select Queries - Selecting two columns
 
 If we want to select two columns we use ```map``` and return a tuple of them:
@@ -477,13 +445,11 @@ SELECT artist, title
 FROM albums;
 ```
 
-Slick will modify the query to only return the two columns requested.  It will return the expected type, in this case a
- tuple of ```String```,```String``` rather than a complete album.
+Slick will modify the query to only return the two columns requested.  It will return the expected type, in this case a tuple of ```String```,```String``` rather than a complete album.
 
 ## 980 # Select Queries - Combining queries
 
-Because each of these combinators returns a new query we can chain them all together so we can chain ```filter``` with
-```map``` to select the titles of all Albums by the artist "Keyboard Cat"
+Because each of these combinators returns a new query we can chain them all together so we can chain ```filter``` with ```map``` to select the titles of all Albums by the artist "Keyboard Cat"
 
 ```scala
 val selectCombinedQuery =
@@ -497,27 +463,22 @@ SELECT title
 FROM albums
 WHERE artist = 'Keyboard Cat';
 ```
-
 ## 990 # Select Queries - Your turn 1
 
-Update the below query to select all albums release after 1990 with a ```Rating``` of ```NotBad``` or higher
-sorted by ```artist```.  This will require two filters and a sortBy
+Update the query below to select all albums released after 1990 with a ```Rating``` of ```NotBad``` or higher sorted by ```artist```.  This will require two filters and a sortBy.
 
-*N.B.* In you query you will have to cast ```NotBad``` to a ```Rating``` using ```(NotBad: Rating)``` as your parameter.
- This is because the type inference cannot work out the lift from NotBad to ```Rep[Rating]``` and you need to give the
- compiler a hint.
+*N.B.* In your query you will have to cast ```NotBad``` to a ```Rating``` using ```(NotBad: Rating)``` as your parameter.
+This is because the type inference cannot work out the lift from NotBad to ```Rep[Rating]``` and you need to give the compiler a hint.
 
 @:editor file=TableCreateQuery1.scala
 
 ## 995 # Select Queries - Your turn 2
 
-Update the below query to select the titles of all albums in ascending year order.  This will require
-a ```map``` and a ```sortBy```
+Update the below query to select the titles of all albums in ascending year order.  This will require a ```map``` and a ```sortBy```
 
 *N.B* The query ordering is important, ```map``` changes the type from ```Album``` to ```String```
 
 @:editor file=TableCreateQuery2.scala
-
 
 ## 1000 # Select Queries - Types
 
@@ -548,14 +509,12 @@ The base query type on the Album table is of the type:
 Query[AlbumTable, Album, Seq]
 ```
 
-So whenever we filter over this query we are passed an ```AlbumTable``` and we get to chose which columns we filter by.
+So whenever we filter over this query we are passed an ```AlbumTable``` and we get to choose which columns we filter by.
 The results are all going to be ```Album```s and the result collection will be a sequence.
 
 ## 1010 # Select Queries - Types in action 1
 
-
-Lets see how Slick keeps these three in sync as we manipulate this query.  We can then uncover the problem we had earlier
-in the exercises with the sequencing of ```map``` and ```sortBy```.
+Let’s see how Slick keeps these three in sync as we manipulate this query.  We can then uncover the problem we had earlier in the exercises with the sequencing of ```map``` and ```sortBy```.
 
 So starting with our regular ```AlbumTable```:
 
@@ -567,9 +526,7 @@ This has ```AlbumTable```, ```Album``` and ```Seq``` as our three type parameter
 ```scala
 val q1: Query[AlbumTable, Album, Seq] = q0.filter(_year === 1987)
 ```
-When we filter the argument to the filter function is our first type parameter (in this case ```AlbumTable```) which
-gives us access to the ```year``` column.  The result of filtering (if you think about filtering over a normal sequence)
-is the same that we started with.  Filtering does not change the type parameters, we will simply have fewer results.
+When we filter the argument to the filter function is our first type parameter (in this case ```AlbumTable```) which gives us access to the ```year``` column.  The result of filtering (if you think about filtering over a normal sequence) is the same that we started with.  Filtering does not change the type parameters, we will simply have fewer results.
 
 ## 1020 # Select Queries - Types in action 2
 
@@ -590,8 +547,7 @@ val q2: Query[Rep[String], Album, Seq] = q1.map(_.title)
 Notice that the type of the P column has taken the type of the column ```Rep[String]```, and the result type to ```String```.
 Slick always keeps these two columns in sync with each other.
 
-To map again we would have to provide something that takes a ```Rep[String]``` rather than ```AlbumTable``` so we can
-no longer choose a different column.
+To map again we would have to provide something that takes a ```Rep[String]``` rather than ```AlbumTable``` so we can no longer choose a different column.
 
 ## 1030 # Select Queries - So what is Rep\[T\]?
 
@@ -613,9 +569,7 @@ There are 4 Reps in this code:
 * ```“Keyboard Cat”```, although we provide a string literal it is implicitly converted to a ```Rep[String]```
 * ```===``` by comparing the ```t.artist``` to ```"Keyboard Cat"``` we are building a bigger ```Rep``` ```Rep[Boolean]``` representing the comparison.
 
-A lot of the Slick methods deal with ```Rep``` types and whenever you see the ```Rep``` type in an error message you are looking at
-an expression that calculates at a database level a value of that type.
-
+A lot of the Slick methods deal with ```Rep``` types and whenever you see the ```Rep``` type in an error message you are looking at an expression that calculates at a database level a value of that type.
 
 ## 2000 # Action Stations!
 
@@ -639,8 +593,7 @@ To actually perform operations on a database we need a handle to the database.
 ```
 
 Which creates a database handle that implements a ```run``` method for exercising Actions against the database.
-The above code uses a helper method to create a handle using a configuration defined in  Typesafe config.  The
- configuration lives in our ```application.conf```:
+The above code uses a helper method to create a handle using a configuration defined in  Typesafe config.  The configuration lives in our ```application.conf```:
 
 ```
 dbconfig = {
@@ -651,14 +604,11 @@ dbconfig = {
 }
 ```
 
-This creates in in-memory H2 database instance.
-An in-memory database is great for testing, but must be recreated each time your application starts.  In production you
-would point at a standard database instance elsewhere.
+This means our application creates an in-memory H2 database instance. An in-memory database is great for testing, but must be recreated each time your application starts.  In production you would point at a standard database instance elsewhere.
 
 ## 2010 # Actions - Create action
 
-The create action is relatively simply from the Scala side, given the ```AlbumTable``` definition, execute the
-appropriate statements to create the corresponding database table.
+The create action is relatively simply from the Scala side, given the ```AlbumTable``` definition, execute the appropriate statements to create the corresponding database table.
 
 ```scala
 val createTableAction =
@@ -674,12 +624,11 @@ CREATE TABLE albums (
   ...);
 ```
 
-Note that the exact syntax used depends on the target database (H2, Oracle etc.).  There is a lot of variance in the
-exact syntax between the databases.  Slick hides this complexity from you behind a sane facade.
+Note that the exact syntax used depends on the target database (H2, Oracle etc.).  There is a lot of variance in the syntax between the databases.  Slick hides this complexity from you behind a common facade.
 
 ## 2020 # Actions - Drop action
 
-Dropping a database table is as easy as create:
+Dropping a database table is as easy as creating it:
 
 ```scala
 val dropTableAction =
@@ -748,11 +697,9 @@ Given ```AlbumTable``` complete the function to insert the sequence of ```Album`
 
 @:editor file=ActionInsertMultiple.scala
 
-
 ## 2040 # Actions - Delete action
 
-Deleting rows from the database is very similar to a normal select query, except we add ```.delete``` to turn it
-into a delete action:
+Deleting rows from the database is very similar to a normal select query, except we add ```.delete``` to turn it into a delete action:
 
 ```scala
 val deleteAction =
@@ -775,11 +722,9 @@ Update the function to return an action to delete all the albums specified by th
 
 @:editor file=ActionDelete.scala
 
-
 ## 2050 # Actions - Update action
 
-Updating records in the database is a little more complex.  We start with a filter to find the correct rows, then map
-to the fields we wish to update (in this example ```title```) and then call ```update``` with the new value:
+Updating records in the database is a little more complex.  We start with a filter to find the correct rows, then map to the fields we wish to update (in this example ```title```) and then call ```update``` with the new value:
 
 ```scala
 val updateAction =
@@ -796,7 +741,6 @@ UPDATE albums
 SET title = “Even Greater Hits”
 WHERE artist = “Keyboard Cat”;
 ```
-
 ## 2060 # Actions - Update action 2
 
 To update more than one column simultaneously we simply tuple the fields we wish to update:
@@ -817,18 +761,15 @@ SET title = “Even Greater Hits”,
  year = 2010
 WHERE artist = “Keyboard Cat”;
 ```
-
 ## 2080 # Actions - Update - your turn
 
-Update albums released after a specified year
-set their rating to “Meh”
+Update albums released after a specified year set their rating to “Meh”
 
 @:editor file=ActionUpdate.scala
 
 ## 2100 # Actions - Types
 
-Lets look at the type of these actions and how they work.  Actions fall into a big hierarchy of types most of which
-we do not need to know about.  But the root type is:
+Let’s look at the type of these actions and how they work.  Actions fall into a big hierarchy of types most of which we do not need to know about.  But the root type is:
 
 ```
 DBIOAction[R, S, E]
@@ -854,20 +795,13 @@ DBIOAction[Seq[Album], NoStream, Effect.All]
 
 ## 2120 # Actions - Streaming
 
-At the start of the course we mentioned that Slick supports streaming of results.  This allows us to
-handle data in a reactive way.  We can pull back results one-by-one as we are ready for them without loading
-them all into memory.  This means we can perform operations on huge databases without risk of crashing the application.
+At the start of the course we mentioned that Slick supports streaming of results.  This allows us to handle data in a reactive way.  We can pull back results one-by-one as we are ready for them without loading them all into memory.  This means we can perform operations on huge databases without risk of crashing the application.
 
-All queries can be used in a non-streaming capacity.  But certain queries can be used to either pull back lists of
-results or to pull back streams.  This short course does not cover streams, so we are only going to worry about the
-phantom type ```NoStream``` but there is also a type parameter ```Streaming``` which has type parameters telling us
-what kind of values we are going to get back in our stream.
+All queries can be used in a non-streaming capacity.  But certain queries can be used to either pull back lists of results or to pull back streams.  This short course does not cover streams, so we are only going to worry about the phantom type ```NoStream```. There is also a type parameter ```Streaming``` which has type parameters telling us what kind of values we are going to get back in our stream.
 
 ## 2125 # Actions - Effect type
 
-The effect type allows Slick to do some reasoning about what actions can be used in what contexts.  There are various
-different types of effect, all of them phantom types.  We never create instances of phantom types, they are used to
-give additional information to the compiler to prevent errors.
+The effect type allows Slick to do some reasoning about what actions can be used in what contexts.  There are various different types of Effect, all of them phantom types.  We never create instances of phantom types, they are used to give additional information to the compiler to prevent errors.
 
 We can see the definition of Effect here:
 
@@ -883,9 +817,7 @@ object Effect {
 }
 ```
 
-We generally do not use these ourselves but they allow Slick to reason about when we are allowed to perform a query
-and the different conditions in which we are allowed to sequence queries together.
-
+We generally do not use these ourselves but they allow Slick to reason about when we are allowed to perform a query and the different conditions in which we are allowed to sequence queries together.
 
 ## 2130 # Actions - Effect type
 
@@ -925,8 +857,7 @@ Gives a result of the type:
 Future[Seq[Album]]
 ```
 
-So even though we are ignoring the streaming and effect type parameters the result type parameter is incredibly
-important.
+So even though we are ignoring the streaming and effect type parameters the result type parameter is incredibly important.
 
 ## 2150 # Actions - One last type
 
@@ -938,11 +869,9 @@ SqlAction[R, S, E]
 
 ```SqlAction``` is a subtype of ```DBIOAction``` and takes the same type parameters.
 
-It is interesting because it provides a ```.statements``` method which returns a ```Seq[String]``` representing all
-of the prepared statements that we are about to issue to the database when we run this action.
+It is interesting because it provides a ```.statements``` method which returns a ```Seq[String]``` representing all of the prepared statements that we are about to issue to the database when we run this action.
 
-Unfortunately not all actions are ```SQLAction```s so we cannot always call this ```statements``` method.  But,
-especially for primitive non-composed actions we can call this to get some quick debugging output.
+Unfortunately not all actions are ```SQLAction```s so we cannot always call this ```statements``` method.  But we can call this to get some quick debugging output, especially for primitive non-composed actions.
 
 ## 2160 # Actions - Statements example
 
@@ -970,10 +899,7 @@ Note that the exact SQL is dependent on the database type.
 
 ## 2200 # Actions - Combinators
 
-One last thing we need to cover for actions is combinators.  Back when we were looking at queries we stated that
-the combinators or queries such as ```filter``` and ```map``` added clauses to a query.  Once you turned it into
-an action by calling ```.result``` the same methods had different meanings.  The meaning within an action context all
-us to chain actions together.  So we can build one big action consisting of a set of smaller steps.
+One last thing we need to cover for actions is combinators.  Back when we were looking at queries we stated that the combinators or queries such as ```filter``` and ```map``` added clauses to a query.  Once you turned it into an action by calling ```.result``` the same methods had different meanings.  The meaning within an action context all us to chain actions together.  So we can build one big action consisting of a set of smaller steps.
 
 ## 2210 # Actions Combinators example
 
@@ -990,12 +916,11 @@ runManyActions()
 ```
 
 We want to run three actions in sequence.  We have seen some of these in the test setup from our examples.
-Create a database, populate it, and then query it returning the result.  ```runManyActions``` in this case achieves
-this goal.
+Create a database, populate it, and then query it returning the result.  ```runManyActions``` in can achieve this goal.
 
-## 2220 # Actions Combinators example
+## 2220 # Actions Combinators example 2
 
-Rather than running this as 3 actions, we can run it as one big action:
+Rather than running this as three actions, we can run it as one big action:
 
 ```scala
 // Sequencing independent actions
@@ -1006,19 +931,14 @@ val oneBigAction =
 exec(oneBigAction)
 ```
 
-We use this ```andThen``` method to chain the actions together with similar actions to a semicolon.  So if you
-have ```A andThen B``` you get back an action that runs ```A``` for it's side effects and then runs ```B``` and then
-results in the result from ```B```.  So in the above case ```oneBigAction``` would run ```action1``` then ```action2```
-then ```action3``` with the result of the exec call being the result of ```action3```
+We use this ```andThen``` method to chain the actions together with similar actions to a semicolon.  So if you have ```A andThen B``` you get back an action that runs ```A``` for it's side effects and then runs ```B``` and then results in the result from ```B```.  So in the above case ```oneBigAction``` would run ```action1``` then ```action2``` then ```action3``` with the result of the exec call being the result of ```action3```.
 
 ## 2230 # Actions - Combinators advantages
 
 So what are the advantages of using ```andThen``` over for calls to ```exec```?
 
-First of all it is non-blocking.  ```exec``` is a hack.  You could use ```db.run``` and chain together futures with
-```onSuccess``` but its messy and error prone.
-Chaining together actions is very similar to chaining together futures.  The key difference is that if we chain
-together actions Slick can perform certain optimisations about how it sends those actions to the database.
+First of all it is non-blocking.  ```exec``` is a hack.  You could use ```db.run``` and chain together futures with ```onSuccess``` but it is messy and error prone.
+Chaining together actions is very similar to chaining together futures.  The key difference is that if we chain together actions Slick can perform certain optimisations about how it sends those actions to the database.
 We also get to control things like database transactions that we will see later.
 
 ## 2240 # Actions - Interdependent actions
@@ -1034,16 +954,11 @@ def runChainOfActions(a: SomeInput) = {
 runChainOfActions()
 ```
 
-In this code we are still running a sequence of actions but we are flowing values from action to action.  So our method
-```runChainOfActions``` accepts a value ```a``` we use that to create our first action, pass that to ```exec``` and get
-back a value ```b```.  And then we use ```b``` to generate the next action.   So in this code the result of each action
-is used to determine which action to run next.  This may sound familiar as 'monadic comprehension', this
-is ```flatMap``` or ```for``` comprehensions.
+In this code we are still running a sequence of actions but we are flowing values from action to action.  So our method ```runChainOfActions``` accepts a value ```a``` we use that to create our first action, pass that to ```exec``` and get back a value ```b```.  And then we use ```b``` to generate the next action.   So in this code the result of each action is used to determine which action to run next.  This may sound familiar as 'monadic comprehension', this is ```flatMap``` or ```for``` comprehensions.
 
 ## 2250 # Actions - Interdependent actions 2
 
-Actions are monads, they have ```map``` and ```flatMap``` methods and they have almost exactly the same semantics as
-```map``` and ```flatMap``` on futures.
+Actions are monads, they have ```map``` and ```flatMap``` methods and they have almost exactly the same semantics as ```map``` and ```flatMap``` on futures.
 
 ```scala
 // Chaining interdependent actions
@@ -1057,31 +972,17 @@ def chainOfActions(a: SomeInput) =
 exec(chainOfActions(someInput))
 ```
 
-The allows us to create one action that chooses action 1 based on ```a```, gets back a result ```b``` and uses that
-to chose action 2 gets back a result ```c``` and so on.  The result of calling chainOfActions is still one action, we
-still have not run anything when we call this method, but when we do run this method we will make all the decisions
-about which actions to perform in which sequence and we will get back the result of action 3 as the final result.
+The allows us to create one action that chooses action 1 based on ```a```, gets back a result ```b``` and uses that to choose action 2 to get back a result ```c``` and so on.  The result of calling chainOfActions is still one action, we still have not run anything when we call this method, but when we do run this method we will make all the decisions about which actions to perform in which sequence and we will get back the result of action 3 as the final result.
 
-This is very similar to for comprehensions of futures and you can think of actions and futures of being almost
-interchangeable with the exception of the fact that if we use actions to compose things slick can do more for us.
-
+This is very similar to for comprehensions of futures and you can think of actions and futures of being almost interchangeable with the exception of the fact that if we use actions to compose things Slick can do more for us.
 
 ## 2260 # Actions - The payoff
 
-One last interesting thing to notice here,  the big action we are building here involves code that is written in Scala
-as code that is written in SQL.  We are sending actions to the database, running queries and getting back results, but
-we are also running Scala code to decide which query to run next.  So our actions can be entire scripts, composed of
-database level and application level code.  And we run them with a single call to ```db.run```.
+One last interesting thing to notice here,  the big action we are building is a mixture of code which running in the application in Scala and in the database in SQL.  We are sending actions to the database, running queries and getting back results, but we are also running Scala code to decide which query to run next.  So our actions can be entire scripts, composed of database level and application level code.  And we run them with a single call to ```db.run```.
 
-The magical payoff for all of this is we have the method ```transactionally```.  Whenever we build an action we can
-call ```transactionally``` on it to generate a new action that does everything that that action did within a transaction
-block.  If any of the queries we run fail for any reason and if any of our Scala code throws an exception the
-transaction will fail, everything will roll back, and we will not have any effect on the database caused by that action.
+The magical payoff for all of this is we have the method ```transactionally```.  Whenever we build an action we can call ```transactionally``` on it to generate a new action that does everything that that action did within a transaction block.  If any of the queries we run fail for any reason and if any of our Scala code throws an exception the transaction will fail, everything will roll back, and we will not have any effect on the database caused by that action.
 
-So we can make any action, no matter how complicated, atomic.  This is really powerful and something you cannot do
-with futures.  So when you are sequencing actions together try to use ```map``` and ```flatmap``` on action as well
-as ```andThen``` and the other available combinators to create your actions.  Then you can decide whether you
-want to run them in a transaction.
+So we can make any action, no matter how complicated, atomic.  This is really powerful and something you cannot do with futures.  So when you are sequencing actions together try to use ```map``` and ```flatmap``` on action as well as ```andThen``` and the other available combinators to create your actions.  Then you can decide whether you want to run them in a transaction.
 
 ```scala
 exec(action.transactionally)
@@ -1096,17 +997,17 @@ Update the below function to create an action which:
 * Rates it "Awesome" if it is their first album
 * Rates it "Meh" otherwise
 
+*Hint:* Use a for comprehension to chain together a select query, choosing the appropriate rating and the insert query
+
 @:editor file=ActionComposition.scala
 
 ## 3000 # Joins
 
-We have covered everything we need to with regard to actions and we are on the home stretch now.  Its time to talk
-about joining tables together in queries.
+We have covered everything we need to with regard to actions and we are on the home stretch now.  It is time to talk about joining tables together in queries.
 
 ## 3010 # Joins - Two tables - Albums
 
-So for the joins section we wil be working with a variant of the Albums table we have seen before.  Instead of an
-artist name we now refer to an ```Artist``` held in another table.
+So for the joins section we will be working with a variant of the Albums table we have seen before.  Instead of an artist name we now refer to an ```Artist``` held in another table.
 
 So here is our updated ```Album``` table:
 
@@ -1129,8 +1030,7 @@ class AlbumTable(tag: Tag) extends Table[Album](tag, "albums") {
 }
 ```
 
-It is almost exactly the same as before but we have replaced the artist name with an artistId which is a foreign key
-into a new table called ```Artist```
+It is almost exactly the same as before but we have replaced the artist name with an artistId which is a foreign key into a new table called ```Artist```
 
 ## 3020 # Joins - Two tables - Artists
 
@@ -1147,19 +1047,19 @@ class ArtistTable(tag: Tag) extends Table[Artist](tag, "artists") {
 }
 ```
 
-```Artist``` just stores the name and primary key, so really all we are doing here is normalising the data previously
-denormalised in one table.  (We would have multiple copies of each artists name, one per album).
+```Artist``` just stores the name and primary key, so really all we are doing here is normalising the data previously denormalised in one table.  (We would have multiple copies of each artist's name, one per album).
 
 ## 3030 # Joins - Two tables - The updated queries
 
-So we also needed to update out basic queries.
+So we also needed to update our basic queries:
+
 ```scala
  val createTablesAction =
    ArtistTable.schema.create andThen
    AlbumTable.schema.create
 ```
 
-The createTablesAction now uses ```andThen``` to create two tables.
+The createTablesAction now uses ```andThen``` to create two tables:
 
 ```scala
  val dropTablesAction =
@@ -1190,8 +1090,7 @@ val insertAllAction: DBIOAction[Unit, NoStream, Effect.Write] =
   } yield ()
 ```
 
-We use a ```for``` comprehension to first insert all of the artists, using ```returning``` (which we have not covered).
-to get back the primary key rather than the row counts each time.  We Then use them to insert all of the albums.
+We use a ```for``` comprehension to first insert all of the artists, using ```returning``` (which we have not covered) to get back the primary key rather than the row counts each time.  We then use them to insert all of the albums.
 
 ## 3050 # Joins - Two types
 
@@ -1200,10 +1099,7 @@ There are two types of joins we are going to discuss:
 * Implicit joins
 * Explicit joins
 
-The difference here is at the SQL level.  Implicit and explicit mean different types of SQL query.  These are not
-Scala or Slick terms,  we are not talking about implicit parameters or type classes.  We are talking about implicit
-SQL joins and explicit SQL joins.
-
+The difference here is at the SQL level.  Implicit and explicit mean different types of SQL query.  These are not Scala or Slick terms,  we are not talking about implicit parameters or type classes.  We are talking about implicit SQL joins and explicit SQL joins.
 
 ## 3060 # Joins - Implicit joins
 
@@ -1215,18 +1111,14 @@ FROM album, artist
 WHERE album.id = artist.albumId;
 ```
 
-In this example we are selecting data from two different tables ```album``` and ```artist``` but we are not
-explicitly telling the database how to join those things together.  It is left up to the database to determine how to
-get hold of the tables, which indexes to use and how to draw the relationship between the two tables.
+In this example we are selecting data from two different tables ```album``` and ```artist``` but we are not explicitly telling the database how to join those things together.  It is left up to the database to determine how to get hold of the tables, which indexes to use and how to draw the relationship between the two tables.
 
-The database can get a hint from the ```WHERE``` clause because we have a join condition (or a where condition that
-filters out all rows where the ```album.id``` and the ```artist.albumId``` do not match).  But, the database has to do
-this heuristically and in some circumstances, some databases will get confused by this and make sub-optimal choices.
+The database can get a hint from the ```WHERE``` clause because we have a join condition (or a where condition that filters out all rows where the ```album.id``` and the ```artist.albumId``` do not match).  But, the database has to do
+this heuristically and in some circumstances, some databases will get confused by this and make suboptimal choices.
 
 ## 3070 # Joins - Implicit joins 2
 
-Implicit joins are typically they way we write joins in SQL, typically database can sort it out, but in some cases they
-result in less than optimal query performance.  But nevertheless Slick provides a nice simple syntax for this.
+Implicit joins are typically they way we write joins in SQL, typically database can sort it out, but in some cases they result in less than optimal query performance.  Slick provides a simple syntax for this.
 So let us see how this works.
 
 ```scala
@@ -1234,31 +1126,23 @@ val query =
   for {
     album <- AlbumTable
     artist <- ArtistTable
-    if album.id === artist.albumId
+    if artist.id === album.artistId
   } yield (album, artist)
 ```
 
-We are back in the land of the query type rather than the action type.  We are using the one remaining query combinator
-that we did not cover previously which is the ```flatMap``` method.  ```flatMap``` on a query allows us to join one
-table onto another (or one query onto another).
+We are back in the land of the query type rather than the action type.  We are using the one remaining query combinator that we did not cover previously which is the ```flatMap``` method.  ```flatMap``` on a query allows us to join one table onto another (or one query onto another).
 
 ## 3080 # Joins - Implicit joins 3
 
-In this example we start with ```AlbumTable``` and ```flatMap```ing that, joining with the ```Artist``` table with a
-join condition (the ```if``` statement).  If you are aware how for comprehensions are compiled you will know that the
-```if``` guard is compiled to a ```filter``` or ```withFilter``` statement.  So if you think about it it ```filter``` is
-pretty much the same as ```WHERE```.  We saw previously that filter conditions expand to ```WHERE``` clauses.  And that
-is exactly what is happening here.
+In this example we start with ```AlbumTable``` and ```flatMap```ing that, joining with the ```Artist``` table with a join condition (the ```if``` statement).  If you are aware how for comprehensions are compiled you will know that the ```if``` guard is compiled to a ```filter``` or ```withFilter``` statement.  So, if you think about it,   ```filter``` is pretty much the same as ```WHERE```.  We saw previously that filter conditions expand to ```WHERE``` clauses.  And that is exactly what is happening here.
 
 ```sql
 SELECT *
 FROM album, artist
-WHERE album.id = artist.albumId;
+WHERE artist.id = album.artistId;
 ```
 
-We are selecting ```*``` by selecting both tables as our result of this query.  And if you remember the types from the
-earlier section you will realise our packed and unpacked types for this query are actually tuples of tables and albums
-and artists.
+We are selecting ```*``` by selecting both tables as our result of this query.  And if you remember the types from the earlier section you will realise our packed and unpacked types for this query are actually tuples of tables and albums and artists.
 
 ## 3090 # Joins - Implicit joins - Your turn
 
@@ -1271,8 +1155,9 @@ Update the ```implicitJoin``` in the code below to create an implicit join that 
 @:editor file=JoinsImplicit.scala
 
 *N.b.* This is an exercise in combining the ```for``` comprehension syntax with the existing combinators we have used.
-Notice we have asked for only artists who have released albums because there may be artists in the database who have
-not released any albums.  To select that artist we would need a left-join which we have not covered yet.
+Notice we have asked for only artists who have released albums because there may be artists in the database who have not released any albums.  To select that artist we would need a left-join which we have not covered yet.
+
+*Hint:* Create the basic join and then sort as a secondary step.
 
 ## 3100 # Joins - Explicit joins
 
@@ -1282,14 +1167,10 @@ FROM artist INNER JOIN album
  ON artist.id = album.artistId;
 ```
 
-An explicit join is exactly that.  Where we specify exactly what kind of join we want to perform.  In this case it is
-an ```INNER JOIN``` and we specify exactly what the join criteria should be with the ```ON``` clause.  Everything from
-the ```FROM``` to the semi-colon is part of the ```FROM``` clause so we can still provide wheres and sort clauses.
+An explicit join is exactly that.  Where we specify exactly what kind of join we want to perform.  In this case it is an ```INNER JOIN``` and we specify exactly what the join criteria should be with the ```ON``` clause.  Everything from the ```FROM``` to the semi-colon is part of the ```FROM``` clause so we can still provide wheres and sort clauses.
 
-When are are saying what tables we want to select from we are giving the database no choice as to how to implement this.
-This is a good thing in that it gives up complete control over the join semantics and a bad thing in that we do not
-give the database any control.  So if we know exactly what we are doing and we are right about it this is a great way
-of writing a query.
+When we are saying what tables we want to select from we are giving the database no choice as to how to implement this.
+This is a good thing in that it gives up complete control over the join semantics and a bad thing in that we do not give the database any control.  So if we know exactly what we are doing and we are right about it. This is a great way of writing a query.
 
 ## 3110 # Joins - Explicit joins - In Slick
 
@@ -1304,13 +1185,11 @@ val query =
   }
 ```
 
-There is a ```join``` method on the table query that allows us to join it onto another table query which produces
- an intermediate object which has an ```on``` method that allows us to specify the join criteria.  We provide a binary
- function that takes the two tables as parameters and returns our usual boolean ```Rep```
+There is a ```join``` method on the table query that allows us to join it onto another table query which produces an intermediate object which has an ```on``` method that allows us to specify the join criteria.  We provide a binary function that takes the two tables as parameters and returns our usual boolean ```Rep```
 
 ## 3120 # Joins - Explicit joins - your turn
 
-Update the below code to complete the explicitJoin definition with an explicit join that finds:
+Update the below code to complete the ```explicitJoin``` definition with an explicit join that finds:
 
 * Artists who have released albums
 * and the albums they have released
@@ -1320,11 +1199,9 @@ Update the below code to complete the explicitJoin definition with an explicit j
 
 @:editor file=JoinsExplicit.scala
 
-
 ## 3130 # Joins - Summary
 
-We have covered all of the basics of implicit and explicit joins and with that we now have a wide set of verbs for
-producing SQL queries.  We know how to filter, select columns, sort, page and join tables together.
+We have covered all of the basics of implicit and explicit joins and with that we now have a wide set of verbs for producing SQL queries.  We know how to filter, select columns, sort, page and join tables together.
 
 
 This brings us to the end of the discussions on queries and actions and sending commands to the database.
@@ -1358,31 +1235,25 @@ There are open source drivers available from the [freeslick project](https://git
 * DB2
 * MSSQL
 
-There is some history behind this, but Lightbend (formally Typesafe) have recently released their commercial
-drivers as open source for the same databases under the slick-extensions package.
+There is some history behind this, but Lightbend (formally Typesafe) have recently released their commercial drivers as open source for the same databases under the Slick-extensions package.
 
 ## 4020 # Profiles - Supporting multiple profiles
 
-There is one other aspect of working with profiles that we need to cover.  How do we write code that is generic across
-different databases?
+There is one other aspect of working with profiles that we need to cover.  How do we write code that is generic across different databases?
 
-Rather than import the entire api we need to import
+Rather than import the entire api we need to import:
+
 ```scala
 import slick.driver.{JdbcProfile, H2Driver}
 ```
 
-```H2Driver``` is the driver we are going to work with and the abstract driver ```JDBCProfile```.  ```JDBCProfile```
-is the supertype of all of the other drivers.  Most of the api provided the the actual drivers is actually provided
-at the ```JDBCProfile``` level.
+```H2Driver``` is the driver we are going to work with and the abstract driver ```JDBCProfile```.  ```JDBCProfile``` is the supertype of all of the other drivers.  Most of the api provided the the actual drivers is actually provided at the ```JDBCProfile``` level.
 
-We can build code that depends on any JDBCProfile and then at the last minute inject a particular subclass to bind that
-code to a particular type of database.
+We can build code that depends on any JDBCProfile and then at the last minute inject a particular subclass to bind that code to a particular type of database.
 
 ## 4030 # Profiles - Supporting multiple profiles 2
 
-To do this we organise our code into a number of different traits representing modules in a database layer.  We mix
-all of the traits together in the right order then at the end we have a class we can instantiate that has a
-constructor parameter where we feed in the relevant driver.
+To do this we organise our code into a number of different traits representing modules in a database layer.  We mix all of the traits together in the right order then at the end we have a class we can instantiate that has a constructor parameter where we feed in the relevant driver.
 
 At the root of our module class hierarchy we have ```DatabaseProfile```:
 
@@ -1396,7 +1267,7 @@ Which simply provides a variable ```profile``` of type ```JDBCProfile```
 
 ## 4035 # Profiles - Supporting multiple profiles 3
 
-Our table definitions is now in its own trait.
+Our table definitions now lives in a trait:
 
 
 ```scala
@@ -1420,15 +1291,11 @@ trait ArtistDatabaseModule {
 ```
 
 The key thing to notice is that this trait has a self type of ```DatabaseProfile```.  This
-means we can only use this trait in a class which also extends ```DatabaseProfile```.    Because we know that
-```DatabaseProfile``` is going to be mixed in to the instantiation class we can import the entire api from
-```JDBCProfile``` simply by doing ```import profile.api._``` for use in declaring and tables and queries.
+means we can only use this trait in a class which also extends ```DatabaseProfile```.    Because we know that ```DatabaseProfile``` is going to be mixed into the instantiation class we can import the entire api from ```JDBCProfile``` simply by doing ```import profile.api._``` for use in declaring and tables and queries.
 
 ## 4040 # Profiles - Supporting multiple profiles 4
 
-Here is the corresponding module for ```Album```.  One thing to note is that the self type includes both
-```DatabaseProfile``` and ```ArtistDatabaseModule```.  This is so we can refer to ```Artist``` within the
-```selectAllAction``` join.
+Here is the corresponding module for ```Album```.  One thing to note is that the self type includes both ```DatabaseProfile``` and ```ArtistDatabaseModule```.  This is so we can refer to ```Artist``` within the ```selectAllAction``` join.
 
 ```scala
 trait AlbumDatabaseModule {
@@ -1481,8 +1348,7 @@ trait TestDataModule {
 
 ## 4050 # Profiles - Supporting multiple profiles - Mixing it up
 
-Finally we can mix them all together to produce a ```DatabaseLayer```.  It is a class, we can actually
-instantiate it and we provide a constructor parameter which concretely instantiates the ```profile```:
+Finally we can mix them all together to produce a ```DatabaseLayer```.  It is a class, we can actually instantiate it and we provide a constructor parameter which concretely instantiates the ```profile```:
 
 ```scala
 class DatabaseLayer[A <: JdbcProfile](val profile: JdbcProfile) extends DatabaseProfile
@@ -1501,10 +1367,7 @@ class DatabaseLayer[A <: JdbcProfile](val profile: JdbcProfile) extends Database
 
 ## 4060 # Profiles - Supporting multiple profiles - In use
 
-When we actually run our made code we build a database layer by creating an instance of this class and passing in the
-driver we care about.  All of the other stuff like ```db``` and ```db.run``` is provided by that class.  So we are
-stacking together traits that each represent different modules and basing them all off a tiny trait that simply
-says this is the profile I'm going to inject at runtime.
+When we actually run our made code we build a database layer by creating an instance of this class and passing in the driver we care about.  All of the other stuff like ```db``` and ```db.run``` is provided by that class.  So we are stacking together traits that each represent different modules and basing them all off a tiny trait that simply says this is the profile I'm going to inject at runtime.
 
 ```
 object Main {
@@ -1535,9 +1398,7 @@ There is a whole bunch of stuff we did not cover.
 * Plain SQL queries
 * Query compilation
 
-Everything in the course is covered in the book
-[EssentialSlick](http://underscore.io/books/essential-slick).  Which provided the source material for this course and
-covers everything seen and more in more detail.
+Everything in the course is covered in the book [EssentialSlick](http://underscore.io/books/essential-slick) which provided the source material for this course and covers everything seen and more in more detail.
 
 One last thing...
 
@@ -1545,10 +1406,6 @@ One last thing...
 
 We would like to thank Dave Gurnell for use of his material from the ScalaX Slick workshop.
 
-*We would love to hear what you think* - what does and does not work, what areas need tuning - rory@scalanator.io
+*We would love to hear what you think* - what does and does not work and what areas need tuning - rory@scalanator.io
 
 The contents of this course are available at [slick-course](https://github.com/ScalanatorIO/slick-course)
-
-
-
-

@@ -5,14 +5,14 @@ object TableCreateQuery2 {
   import SharedOneTable._
 
   /*:CODEFROM:*/
-//
-//  val albumTitlesOrderedByYear = ???
-//
+
+  val albumTitlesOrderedByYear = AlbumTable
+
   /*:CODETO:*/
   /*:SOLUTIONFROM:*/
-
-    val albumTitlesOrderedByYear = AlbumTable.sortBy(_.year).map(_.title)
-
+//
+//  val albumTitlesOrderedByYear = AlbumTable.sortBy(_.year).map(_.title)
+//
   /*:SOLUTIONTO:*/
 
 }

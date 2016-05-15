@@ -1,4 +1,5 @@
 import slick.driver.H2Driver.api._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object ActionComposition {
 
@@ -10,15 +11,27 @@ object ActionComposition {
 //  * Rates it "Meh" otherwise
 
   // used to remove unused imports
-  def __hidden__ = {
+  def __hidden__(): Unit = {
     AlbumTable.countDistinct.result
+    println(global)
   }
 
   /*:CODEFROM:*/
-  // The exercise is not ready yet
   def insertNewAlbum(artist: String, title: String, year: Int) = {
     ???
   }
   /*:CODETO:*/
+  /*:SOLUTIONFROM:*/
+//  def insertNewAlbum(artist: String, title: String, year: Int) = {
+//    for {
+//      existing <- AlbumTable.filter { a => a.artist === artist && a.year < year }.result
+//      rating = existing.length match {
+//        case 0 => Rating.Awesome
+//        case _ => Rating.Meh
+//      }
+//      _ <- AlbumTable += Album(artist, title, year, rating)
+//    } yield ()
+//  }
+  /*:SOLUTIONTO:*/
 
 }

@@ -125,18 +125,4 @@ object SharedTwoTables {
     ArtistTable.join(AlbumTable)
       .on { case (artist, album) => artist.id === album.artistId }
       .result
-
-
-
-  // Database -----------------------------------
-
-  val db = Database.forConfig("dbconfig")
-
-
-
-  // Let's go! ----------------------------------
-
-  def exec[T](action: DBIO[T]): T =
-    Await.result(db.run(action), 2 seconds)
-
 }

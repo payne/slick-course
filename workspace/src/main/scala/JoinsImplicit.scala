@@ -11,9 +11,21 @@ object JoinsImplicit {
 
   /*:CODEFROM:*/
   val implicitJoin = {
-    // The exercise is not ready yet
     ???
   }
   /*:CODETO:*/
+  /*:SOLUTIONFROM:*/
+//  val implicitJoin = {
+//    // get the joined results unsorted
+//    val baseQuery = for {
+//      album <- AlbumTable
+//      artist <- ArtistTable
+//      if artist.id === album.artistId
+//    } yield (artist.name, album.title)
+//    // extend the query to sort the results
+//    baseQuery.sortBy(_._1)
+//  }
+  /*:SOLUTIONTO:*/
+
 
 }

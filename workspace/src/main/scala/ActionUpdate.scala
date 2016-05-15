@@ -10,10 +10,16 @@ object ActionUpdate {
   }
 
   /*:CODEFROM:*/
-  // The exercise is not ready yet
   def updateToMehAfterYear(year: Int) = {
     ???
   }
   /*:CODETO:*/
+  /*:SOLUTIONFROM:*/
+//  def updateToMehAfterYear(year: Int) = {
+//    AlbumTable.filter(_.year > year)
+//    .map(a => a.rating)
+//      .update(Rating.Meh)
+//  }
+  /*:SOLUTIONTO:*/
 
 }

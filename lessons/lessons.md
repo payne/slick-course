@@ -106,7 +106,7 @@ Next we need to define the database table mapping for the Album class:
 `We define a class that extends the standard Slick ```Table``` class representing an SQL table for storing instances of Album.  There are a few key points:
 
 * We define ```Table[Album]``` meaning this table is going to store Albums.
-* The name ```"album"``` defines the name of the table within the database.
+* The name ```"albums"``` defines the name of the table within the database.
 * We define two column, ```artist``` and ```title```. Both columns  that store a ```String``` with a column name that matches the name.
 * The mapping for the ```id``` column has two extra flags:
     * ```O.PrimaryKey``` - This value represents a unique identifier for a row in the database

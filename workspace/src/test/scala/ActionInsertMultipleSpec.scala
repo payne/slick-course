@@ -1,4 +1,5 @@
 import slick.driver.H2Driver.api._
+import slick.profile.FixedSqlAction
 
 class ActionInsertMultipleSpec extends AbstractDBSpec {
 
@@ -10,14 +11,13 @@ class ActionInsertMultipleSpec extends AbstractDBSpec {
     val expectedType = "(albums: Seq[SharedOneTable.Album])slick.profile.FixedSqlAction[Option[Int],slick.dbio.NoStream,slick.dbio.Effect.Write]"
     checkMethodCorrect[ActionInsertMultiple.type](methodName, expectedType, "an insert action")
 
-    val insertMethod = (ActionInsertSingle.insertAlbumAction _).asInstanceOf[
-      (Seq[Album]) => slick.profile.FixedSqlAction[Int, slick.dbio.NoStream, slick.dbio.Effect.Write]]
-
+    val insertMethod = (ActionInsertMultiple.insertAlbumsAction _).asInstanceOf[
+      (Seq[SharedOneTable.Album]) => FixedSqlAction[Option[Int],slick.dbio.NoStream,slick.dbio.Effect.Write]]
 
     val testAlbum1 = Album(randomStringCreator(),randomStringCreator(), 1996, Rating.Awesome)
     val testAlbum2 = Album(randomStringCreator(),randomStringCreator(), 2001, Rating.Meh)
 
-    val insertAction = ensureImplemented(insertMethod(Seq(testAlbum1, testAlbum2)), methodName)
+    val insertAction = ensureImplemented(insertMethod(List(testAlbum1, testAlbum2)), methodName)
 
     val createTableAction = AlbumTable.schema.create
 

@@ -1,8 +1,6 @@
 
 ## 0 # Welcome to the Essential Slick Course
 
-*Note that this course is under development and the text and exercises may be incomplete*
-
 Welcome to the essential Slick course.
 
 This course assumes a working knowledge of Scala and basic database concepts.  It  aims to give you a working knowledge of the key concepts of Slick by a combination of discussion and practical exercises to test and extend your knowledge.
@@ -157,24 +155,6 @@ The code and naming above is a standard Slick convention and all examples and ex
 The various options available in table setup are specified in the Slick documentation.
 
 
-## 650 # Executing queries
-
-Now we have a database handle we can execute Actions against the database:
-
-```scala
-  def exec[T](action: DBIO[T]): T =
-    Await.result(db.run(action), 2 seconds)
-
-  exec(createTableAction)
-  exec(insertAlbumsAction)
-  exec(selectAlbumsAction).foreach(println)
-```
-
-
-The ```run``` take an action and return a future (they are executed asynchronously).
-So for the above example we have created a helper method ```exec``` to run the action and wait for the results.
-Normally you are able to handle the results asynchronously as well.
-
 ## 675 # Tables - Your turn
 
 The first exercise involves modifying the Album definition we have seen above.
@@ -272,7 +252,7 @@ We have covered all the basics of creating tables and mappings.  So now we will 
 
 Selecting data is 90% of the work we are going to be doing with databases.
 
-### Select Queries - Queries vs Actions
+### 810 # Select Queries - Queries vs Actions
 
 Action is a task to be run on the database with
 
@@ -296,6 +276,26 @@ So why do we have a difference between a query and an action?  Queries have meth
 Both queries and actions are monadic so a lot of the method names are the same, ```flatmap```,```map```, ```filter``` and so on, but the meaning of the methods are quite different leading to us having two distinct data types.
 
 So we will always start by building a query and then use some kind of method (in this case ```result```) to turn that into an action to do a particular type of operation.
+
+## 820 # Select Queries - Executing queries
+
+Now we have a database handle we can execute Actions against the database:
+
+```scala
+  def exec[T](action: DBIO[T]): T =
+    Await.result(db.run(action), 2 seconds)
+
+  exec(createTableAction)
+  exec(insertAlbumsAction)
+  exec(selectAlbumsAction).foreach(println)
+```
+
+
+The ```run``` take an action and return a future (they are executed asynchronously).
+So for the above example we have created a helper method ```exec``` to run the action and wait for the results.
+Normally you are able to handle the results asynchronously as well.
+
+
 
 ## 900 # Select Queries - Combinators
 
@@ -465,7 +465,7 @@ WHERE artist = 'Keyboard Cat';
 ```
 ## 990 # Select Queries - Your turn 1
 
-Update the query below to select all albums released after 1990 with a ```Rating``` of ```NotBad``` or higher sorted by ```artist```.  This will require two filters and a sortBy.
+Update the query below to select all albums released after 1990 with a ```Rating``` of ```NotBad``` sorted by ```artist```.  This will require two filters and a sortBy.
 
 *N.B.* In your query you will have to cast ```NotBad``` to a ```Rating``` using ```(NotBad: Rating)``` as your parameter.
 This is because the type inference cannot work out the lift from NotBad to ```Rep[Rating]``` and you need to give the compiler a hint.
@@ -533,7 +533,7 @@ When we filter the argument to the filter function is our first type parameter (
 Given:
 
 ```scala
-val q1: Query[AlbumTable, Album, Seq] = q0.filter(_year === 1987)
+val q1: Query[AlbumTable, Album, Seq] = q0.filter(_.year === 1987)
 ```
 
 Remember when we map on a normal functor we change the type parameter on our collection.
@@ -541,7 +541,7 @@ Remember when we map on a normal functor we change the type parameter on our col
 Let's see what happens when we ```map```:
 
 ```scala
-val q2: Query[Rep[String], Album, Seq] = q1.map(_.title)
+val q2: Query[Rep[String], String, Seq] = q1.map(_.title)
 ```
 
 Notice that the type of the P column has taken the type of the column ```Rep[String]```, and the result type to ```String```.
@@ -899,7 +899,7 @@ Note that the exact SQL is dependent on the database type.
 
 ## 2200 # Actions - Combinators
 
-One last thing we need to cover for actions is combinators.  Back when we were looking at queries we stated that the combinators or queries such as ```filter``` and ```map``` added clauses to a query.  Once you turned it into an action by calling ```.result``` the same methods had different meanings.  The meaning within an action context all us to chain actions together.  So we can build one big action consisting of a set of smaller steps.
+One last thing we need to cover for actions is combinators.  Back when we were looking at queries we stated that the combinators or queries such as ```filter``` and ```map``` added clauses to a query.  Once you turned it into an action by calling ```.result``` the same methods had different meanings.  The meaning within an action context allow us to chain actions together.  So we can build one big action consisting of a set of smaller steps.
 
 ## 2210 # Actions Combinators example
 

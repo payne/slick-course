@@ -334,7 +334,7 @@ WHERE artist = ‘Spice Girls’;
 
 ## 920 # Select Queries - Filters
 
-An important thing to here is:
+An important thing to note here:
 
 ```scala
 AlbumTable.filter(_.artist === “Spice Girls”)
